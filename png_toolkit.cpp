@@ -32,3 +32,14 @@ image_data png_toolkit::getPixelData( void ) const
 {
     return imgData;
 }
+
+void png_toolkit::process_image()
+{
+	for (int i = imgData.w * imgData.h * imgData.compPerPixel / 2; i < imgData.w * imgData.h * imgData.compPerPixel; ++i) {
+		if (i % imgData.compPerPixel == 0)
+			imgData.pixels[i] = 255;
+		else
+			imgData.pixels[i] = 0;
+
+	}
+}
