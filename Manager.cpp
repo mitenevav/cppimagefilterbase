@@ -5,7 +5,8 @@ void Manager::Parser(char* fileName)
 {
 	std::ifstream f(fileName);
 	if (!f.is_open()) {
-		throw "Invalid config file!";
+		//throw "Invalid config file!";
+		return;
 	}
 
 	while (!f.eof()) {
