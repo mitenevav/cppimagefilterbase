@@ -3,6 +3,9 @@
 #include <array>
 #include "stb_image_write.h"
 #include "png_toolkit.h"
+#include <vector>
+#include "Kernel.h"
+#include "Filters.h"
 
 png_toolkit::png_toolkit()
 {
@@ -10,36 +13,30 @@ png_toolkit::png_toolkit()
 
 png_toolkit::~png_toolkit()
 {
-    stbi_image_free(imgData.pixels);
+	stbi_image_free(imgData.pixels);
 }
 
-bool png_toolkit::load( const std::string &pictureName )
+bool png_toolkit::load(const std::string& pictureName)
 {
-    imgData.pixels = stbi_load(pictureName.c_str(), &imgData.w, &imgData.h, &imgData.compPerPixel, 0);
-    return imgData.pixels != nullptr;
+	imgData.pixels = stbi_load(pictureName.c_str(), &imgData.w, &imgData.h, &imgData.compPerPixel, 0);
+	return imgData.pixels != nullptr;
 }
 
-bool png_toolkit::save( const std::string &pictureName )
+bool png_toolkit::save(const std::string& pictureName)
 {
-    return stbi_write_png(pictureName.c_str(),
-                   imgData.w, imgData.h,
-                   imgData.compPerPixel,
-                          imgData.pixels, 0) != 0;
+	return stbi_write_png(pictureName.c_str(),
+		imgData.w, imgData.h,
+		imgData.compPerPixel,
+		imgData.pixels, 0) != 0;
 }
 
 
-image_data png_toolkit::getPixelData( void ) const
+image_data png_toolkit::getPixelData(void) const
 {
-    return imgData;
+	return imgData;
 }
 
-void png_toolkit::process_image()
+void png_toolkit::process_image(Filter* filter)
 {
-	for (int i = imgData.w * imgData.h * imgData.compPerPixel / 2; i < imgData.w * imgData.h * imgData.compPerPixel; ++i) {
-		if (i % imgData.compPerPixel == 0)
-			imgData.pixels[i] = 255;
-		else
-			imgData.pixels[i] = 0;
-
-	}
+	filter->Apply(imgData);
 }

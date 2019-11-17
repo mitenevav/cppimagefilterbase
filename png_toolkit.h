@@ -4,14 +4,10 @@
 #include <string>
 #include <map>
 //#include <memory>
-#include "stb_image.h"
+#include <vector>
+#include "Filters.h"
+#include "ImageData.h"
 
-struct image_data
-{
-    stbi_uc *pixels;
-    int w, h;
-    int compPerPixel;
-};
 
 class png_toolkit
 {
@@ -27,10 +23,11 @@ public:
     bool load( std::string const &pictureName );
     bool save( std::string const &pictureName );
     image_data getPixelData( void ) const;
-	void process_image();
+	void process_image(Filter* filter);
 
 private:
     image_data imgData;
 };
+
 
 #endif // PNG_TOOLKIT_H

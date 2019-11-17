@@ -1,5 +1,7 @@
 #include <iostream>
 #include "png_toolkit.h"
+#include "Filters.h"
+#include "Manager.h"
 
 int main( int argc, char *argv[] )
 {
@@ -7,13 +9,14 @@ int main( int argc, char *argv[] )
     // toolkit near test images!
     try
     {
-        if (argc != 3)
+        if (argc != 4)
             throw "Not enough arguments";
 
-        png_toolkit studTool;
-        studTool.load(argv[1]);
-		studTool.process_image();
-        studTool.save(argv[2]);
+		Manager manager;
+
+		manager.Parser(argv[1]);
+		manager.MakeFilters();
+		manager.Run(argv[2], argv[3]);
 
     }
     catch (const char *str)
