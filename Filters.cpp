@@ -2,6 +2,7 @@
 #include "Kernel.h"
 #include <vector>
 #include <array>
+#include <algorithm>
 
 
 void RedFilter::Apply(image_data& imgData)
