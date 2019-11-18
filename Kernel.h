@@ -7,7 +7,7 @@ public:
 	Kernel(int size = 3);
 	std::vector<int> Apply(image_data& data, int lineElem, int columnElem);
 protected:
-	std::vector<std::vector<double>> w_;
+	std::vector<std::vector<int>> w_;
 	int size_;
 };
 

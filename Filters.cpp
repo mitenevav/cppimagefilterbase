@@ -187,6 +187,11 @@ void EdgeFilter::Apply(image_data& imgData)
 			int x = ((firstLine + i) * imgData.w + (firstColumn + j)) * imgData.compPerPixel;
 			res = ker.Apply(area, i, j);
 			for (int k = 0; k < res.size(); k++) {
+				if (res[k] > 255)
+					res[k] = 255;
+				else if (res[k] < 0)
+					res[k] = 0;
+
 				imgData.pixels[x + k] = res[k];
 			}
 		}
@@ -232,7 +237,7 @@ void BlurFilter::Apply(image_data& imgData)
 			int x = ((firstLine + i) * imgData.w + (firstColumn + j)) * imgData.compPerPixel;
 			res = ker.Apply(area, i, j);
 			for (int k = 0; k < res.size(); k++) {
-				imgData.pixels[x + k] = res[k];
+				imgData.pixels[x + k] = res[k] / (size_*size_);
 			}
 		}
 	}

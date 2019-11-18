@@ -14,8 +14,8 @@ std::vector<int> Kernel::Apply(image_data& data, int lineElem, int columnElem)
 	
 	
 	
-	std::vector<double> sum;
-	sum.resize(3);
+	std::vector<int> result;
+	result.resize(3);
 
 
 	y = lineElem - size_ / 2;
@@ -24,18 +24,14 @@ std::vector<int> Kernel::Apply(image_data& data, int lineElem, int columnElem)
 		x = columnElem - size_ / 2;
 		for (int j = 0; j < size_; j++) {
 			if (x >= 0 && y >= 0 && x < data.w && y < data.h) {
-				sum[0] += data.pixels[y * data.w * data.compPerPixel + x * data.compPerPixel] * w_[i][j];
-				sum[1] += data.pixels[y * data.w * data.compPerPixel + x * data.compPerPixel + 1] * w_[i][j];
-				sum[2] += data.pixels[y * data.w * data.compPerPixel + x * data.compPerPixel + 2] * w_[i][j];
+				result[0] += data.pixels[y * data.w * data.compPerPixel + x * data.compPerPixel] * w_[i][j];
+				result[1] += data.pixels[y * data.w * data.compPerPixel + x * data.compPerPixel + 1] * w_[i][j];
+				result[2] += data.pixels[y * data.w * data.compPerPixel + x * data.compPerPixel + 2] * w_[i][j];
 			}
 			x++;
 		}
 		y++;
 	}
-	std::vector<int> result;
-	result.push_back((int)sum[0]);
-	result.push_back((int)sum[1]);
-	result.push_back((int)sum[2]);
 
 	return result;
 }
@@ -56,7 +52,7 @@ BlurKernel::BlurKernel(int size) : Kernel(size)
 {
 	for (int i = 0; i < size; i++) {
 		for (int j = 0; j < size; j++) {
-			w_[i][j] = 1.0 / size / size;
+			w_[i][j] = 1;
 		}
 	}
 }
