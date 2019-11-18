@@ -67,9 +67,11 @@ int FindMed(image_data& imgData, int lineElem, int columnElem, int size) {
 			if (x >= 0 && y >= 0 && x < imgData.w && y < imgData.h) {
 				buff.push_back(imgData.pixels[y * imgData.w * imgData.compPerPixel + x * imgData.compPerPixel]);
 			}
+			/*
 			else {
 				buff.push_back(0);
 			}
+			*/
 			x++;
 		}
 		y++;
@@ -77,7 +79,7 @@ int FindMed(image_data& imgData, int lineElem, int columnElem, int size) {
 
 	std::sort(buff.begin(), buff.end());
 
-	return buff[size*size/2];
+	return buff[buff.size()/2];
 }
 
 void ThresholdFilter::Apply(image_data& imgData)
