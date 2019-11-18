@@ -1,5 +1,6 @@
 #pragma once
 #include "ImageData.h"
+#include "Kernel.h"
 
 struct FiltersBorder {
 	int up_;
@@ -23,6 +24,20 @@ public:
 	Filter(FiltersBorder& fBorders) : filterBorders_(fBorders) {};
 protected:
 	FiltersBorder filterBorders_;
+};
+
+class ConvolutionFilter : public Filter {
+protected:
+	Kernel* ker;
+	int size_;
+public:
+	virtual ~ConvolutionFilter() {};
+	virtual void Apply(image_data& imgData) = 0;
+
+
+	ConvolutionFilter(int up, int left, int down, int right, int size = 3) : Filter(up, left, down, right), size_(size) {};
+	ConvolutionFilter(int size = 3) : Filter(), size_(size) {};
+	ConvolutionFilter(FiltersBorder& fBorders, int size = 3) : Filter(fBorders), size_(size) {};
 };
 
 class RedFilter : public Filter {
@@ -57,26 +72,41 @@ public:
 	BlWhFilter(FiltersBorder& fBorders) : Filter(fBorders) {};
 };
 
-class EdgeFilter : public Filter {
-private:
-	int size_;
+class EdgeFilter : public ConvolutionFilter {
 public:
 	void Apply(image_data& imgData);
+	~EdgeFilter() {
+		delete ker;
+	}
 
 
-	EdgeFilter(int up, int left, int down, int right, int size = 3) : Filter(up, left, down, right), size_(size) {};
-	EdgeFilter(int size = 3) : Filter(), size_(size) {};
-	EdgeFilter(FiltersBorder& fBorders, int size = 3) : Filter(fBorders), size_(size) {};
+
+	EdgeFilter(int up, int left, int down, int right, int size = 3) : ConvolutionFilter(up, left, down, right, size) {
+		ker = new EdgeKernel(size_);
+	};
+	EdgeFilter(int size = 3) : ConvolutionFilter(size) {
+		ker = new EdgeKernel(size_);
+	};
+	EdgeFilter(FiltersBorder& fBorders, int size = 3) : ConvolutionFilter(fBorders, size) {
+		ker = new EdgeKernel(size_);
+	};
 };
 
-class BlurFilter : public Filter {
-private:
-	int size_;
+class BlurFilter : public ConvolutionFilter {
 public:
 	void Apply(image_data& imgData);
+	~BlurFilter() {
+		delete ker;
+	}
 
 
-	BlurFilter(int up, int left, int down, int right, int size = 3) : Filter(up, left, down, right), size_(size) {};
-	BlurFilter(int size = 3) : Filter(), size_(size) {};
-	BlurFilter(FiltersBorder& fBorders, int size = 3) : Filter(fBorders), size_(size) {};
+	BlurFilter(int up, int left, int down, int right, int size = 3) : ConvolutionFilter(up, left, down, right, size){
+		ker = new BlurKernel(size_);
+	};
+	BlurFilter(int size = 3) : ConvolutionFilter(size){
+		ker = new BlurKernel(size_);
+	};
+	BlurFilter(FiltersBorder& fBorders, int size = 3) : ConvolutionFilter(fBorders, size){
+		ker = new BlurKernel(size_);
+	};
 };

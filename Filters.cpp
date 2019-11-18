@@ -49,23 +49,35 @@ void BlWhFilter::Apply(image_data& imgData)
 			imgData.pixels[x] = val;
 			imgData.pixels[x + 1] = val;
 			imgData.pixels[x + 2] = val;
-
-			/*
-			int sum=0;
-
-			for (int count = 0; count < 3; count++) {
-				sum += imgData.pixels[x + count];
-			}
-
-			sum /= 3;
-
-			for (int count = 0; count < 3; count++) {
-				imgData.pixels[x + count] = sum;
-			}
-			*/
-
 		}
 	}
+}
+
+int FindMed(image_data& imgData, int lineElem, int columnElem, int size) {
+	int x, y;
+
+	std::vector<int> buff;
+
+
+	y = lineElem - size / 2;
+
+	for (int i = 0; i < size; i++) {
+		x = columnElem - size / 2;
+		for (int j = 0; j < size; j++) {
+			if (x >= 0 && y >= 0 && x < imgData.w && y < imgData.h) {
+				buff.push_back(imgData.pixels[y * imgData.w * imgData.compPerPixel + x * imgData.compPerPixel]);
+			}
+			else {
+				buff.push_back(0);
+			}
+			x++;
+		}
+		y++;
+	}
+
+	std::sort(buff.begin(), buff.end());
+
+	return buff[size*size/2];
 }
 
 void ThresholdFilter::Apply(image_data& imgData)
@@ -83,7 +95,40 @@ void ThresholdFilter::Apply(image_data& imgData)
 	BlWhFilter bwFilter(filterBorders_);
 	bwFilter.Apply(imgData);
 
+	image_data area;
+	area.compPerPixel = imgData.compPerPixel;
+	area.h = lastLine - firstLine;
+	area.w = lastColumn - firstColumn;
+	area.pixels = new stbi_uc[(lastLine - firstLine) * (lastColumn - firstColumn) * imgData.compPerPixel];
 
+	int numElem = 0;
+	for (int i = firstLine; i < lastLine; i++) {
+		int y = i * imgData.w * imgData.compPerPixel;
+		for (int j = firstColumn; j < lastColumn; j++) {
+			int x = y + j * imgData.compPerPixel;
+			for (int k = 0; k < imgData.compPerPixel; k++) {
+				area.pixels[numElem] = imgData.pixels[x + k];
+				numElem++;
+			}
+		}
+	}
+
+	for (int i = 0; i < area.h; i++) {
+		for (int j = 0; j < area.w; j++) {
+			int med;
+			int x = ((firstLine + i) * imgData.w + (firstColumn + j)) * imgData.compPerPixel;
+			med = FindMed(area, i, j, size_);
+			if (imgData.pixels[x] < med) {
+				for (int k = 0; k < 3; k++) {
+					imgData.pixels[x + k] = 0;
+				}
+			}
+		}
+	}
+
+	delete[] area.pixels;
+
+	/*
 	std::vector<int> buff;
 
 	for (int i = firstLine; i < lastLine; i += size_) {
@@ -144,6 +189,7 @@ void ThresholdFilter::Apply(image_data& imgData)
 			buff.clear();
 		}
 	}
+	*/
 }
 
 void EdgeFilter::Apply(image_data& imgData)
@@ -179,13 +225,11 @@ void EdgeFilter::Apply(image_data& imgData)
 		}
 	}
 
-	EdgeKernel ker(size_);
-
 	for (int i = 0; i < area.h; i++) {
 		for (int j = 0; j < area.w; j++) {
 			std::vector<int> res;
 			int x = ((firstLine + i) * imgData.w + (firstColumn + j)) * imgData.compPerPixel;
-			res = ker.Apply(area, i, j);
+			res = ker->Apply(area, i, j);
 			for (int k = 0; k < res.size(); k++) {
 				if (res[k] > 255)
 					res[k] = 255;
@@ -229,13 +273,11 @@ void BlurFilter::Apply(image_data& imgData)
 		}
 	}
 
-	BlurKernel ker(size_);
-
 	for (int i = 0; i < area.h; i++) {
 		for (int j = 0; j < area.w; j++) {
 			std::vector<int> res;
 			int x = ((firstLine + i) * imgData.w + (firstColumn + j)) * imgData.compPerPixel;
-			res = ker.Apply(area, i, j);
+			res = ker->Apply(area, i, j);
 			for (int k = 0; k < res.size(); k++) {
 				imgData.pixels[x + k] = res[k] / (size_*size_);
 			}

@@ -12,8 +12,6 @@ std::vector<int> Kernel::Apply(image_data& data, int lineElem, int columnElem)
 {
 	int x, y;
 	
-	
-	
 	std::vector<int> result;
 	result.resize(3);
 

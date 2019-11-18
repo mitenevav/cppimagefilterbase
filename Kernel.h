@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
-#include "png_toolkit.h"
+//#include "png_toolkit.h"
+#include "ImageData.h"
 
 class Kernel {
 public:
