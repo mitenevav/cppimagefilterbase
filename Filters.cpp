@@ -44,7 +44,7 @@ void BlWhFilter::Apply(image_data& imgData)
 		for (int j = firstColumn; j < lastColumn; j++) {
 			int x = k + j * imgData.compPerPixel;
 
-			int val = imgData.pixels[x] * 0.3 + imgData.pixels[x + 1] * 0.6 + imgData.pixels[x + 2] * 0.1;
+			int val = (imgData.pixels[x] * 3 + imgData.pixels[x + 1] * 6 + imgData.pixels[x + 2] * 1) / 10;
 
 			imgData.pixels[x] = val;
 			imgData.pixels[x + 1] = val;
@@ -79,7 +79,7 @@ int FindMed(image_data& imgData, int lineElem, int columnElem, int size) {
 
 	std::sort(buff.begin(), buff.end());
 
-	return buff[buff.size()/2];
+	return buff[buff.size() / 2];
 }
 
 void ThresholdFilter::Apply(image_data& imgData)
@@ -281,7 +281,7 @@ void BlurFilter::Apply(image_data& imgData)
 			int x = ((firstLine + i) * imgData.w + (firstColumn + j)) * imgData.compPerPixel;
 			res = ker->Apply(area, i, j);
 			for (int k = 0; k < res.size(); k++) {
-				imgData.pixels[x + k] = res[k] / (size_*size_);
+				imgData.pixels[x + k] = res[k] / (size_ * size_);
 			}
 		}
 	}
